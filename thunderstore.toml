@@ -2,10 +2,10 @@
 schemaVersion = "0.0.1"
 
 [package]
-namespace = "CaptainOfCoit"
-name = "MyCoolMod"
+namespace = "WG"
+name = "WG_CS2_RealisticPopulation"
 versionNumber = "0.1.0"
-description = "Example mod description"
+description = ""
 websiteUrl = "https://thunderstore.io"
 containsNsfwContent = false
 

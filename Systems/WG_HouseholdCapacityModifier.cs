@@ -6,10 +6,11 @@ using Unity.Entities;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Scripting;
-
-namespace MyCoolMod.Systems
+// Probably not required, keep for now
+/*
+namespace WG_CS2_RealisticPopulation.Systems
 {
-    public class MyCoolModSystem : GameSystemBase
+    public class WG_CS2_RealisticPopulationSystem : GameSystemBase
     {
         // private SimulationSystem simulation;
 
@@ -37,3 +38,4 @@ namespace MyCoolMod.Systems
         protected override void OnUpdate() {}
     }
 }
+*/
