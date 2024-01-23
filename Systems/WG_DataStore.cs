@@ -13,5 +13,6 @@ namespace WG_CS2_RealisticPopulation
     public class DataStore
     {
         public static float officeBooster = 2.5f;
+        public static int maxOfficeBooster = 6;
     }
 }

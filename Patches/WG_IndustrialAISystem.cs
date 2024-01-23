@@ -5,7 +5,7 @@ using Game.Simulation;
 using Unity.Mathematics;
 using Game.Economy;
 
-namespace WG_WorkerCapacityBooster.Patches
+namespace WG_CS2_RealisticPopulation.Patches
 {
 	[HarmonyPatch(typeof(IndustrialAISystem), nameof(IndustrialAISystem.GetFittingWorkers))]
 	class IndustrialPatch
@@ -29,15 +29,15 @@ namespace WG_WorkerCapacityBooster.Patches
 				// TODO - If we can change the space multipler when loading the prefab (if it actually works this way), then remove it
 				if (spaceMultiplier >= 4) // High density
                 {
-					baseMultiplier = 2.5f;
-					levelMultiplier = 0f; // No need to give more workers since it's a high density already
+					baseMultiplier = 25f; // Was 2.5, but absorbing the 10 previously multiplied in spaceMultiplier
+					levelMultiplier = -2.5f; // Slight reduction (Also aborbing the 10 previously multiplied in spaceMultiplier)
 					// Implicit floor in the divide 2
-					// Over write the space multiplier entirely with pseudo height calc
-					spaceMultiplier = 10*(math.min((building.m_LotSize.x + building.m_LotSize.y)/2, DataStore.maxOfficeBooster)-1f);
+					// Overwrite the space multiplier entirely with pseudo height calc
+					spaceMultiplier = (math.min((building.m_LotSize.x + building.m_LotSize.y) / 2, DataStore.maxOfficeBooster) - 1);
                 }
                 else
 				{
-					baseMultiplier = 3f;
+					baseMultiplier = 4f;
 				}
 			}
 			else if (lotArea > 36) {
