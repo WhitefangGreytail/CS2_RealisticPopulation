@@ -30,7 +30,7 @@ namespace WG_CS2_RealisticPopulation.Patches
 				if (spaceMultiplier >= 4) // High density
                 {
 					baseMultiplier = 25f; // Was 2.5, but absorbing the 10 previously multiplied in spaceMultiplier
-					levelMultiplier = -2.5f; // Slight reduction (Also aborbing the 10 previously multiplied in spaceMultiplier)
+					levelMultiplier = -1f; // Any change must also aborbing the 10 previously multiplied in spaceMultiplier
 					// Implicit floor in the divide 2
 					// Overwrite the space multiplier entirely with pseudo height calc
 					spaceMultiplier = (math.min((building.m_LotSize.x + building.m_LotSize.y) / 2, DataStore.maxOfficeBooster) - 1);
@@ -41,7 +41,7 @@ namespace WG_CS2_RealisticPopulation.Patches
 				}
 			}
 			else if (lotArea > 36) {
-				// Signature buildings
+				// Signature Industrial buildings
 				baseMultiplier = 2.25f; // Won't give the same multipler as vanilla, feels okay for this number
 				levelMultiplier = 0f;
 			}

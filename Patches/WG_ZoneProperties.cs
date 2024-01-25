@@ -111,8 +111,15 @@ namespace WG_CS2_RealisticPopulation.Patches
                         // Reduce residentialProperties to lower if constrained to a short building by tweaking the multiplier by lot size
                         // Smaller buildings are difficult to make tall
                         baseNum = 1.75f;
-                        levelBooster = 0.05f;
+                        levelBooster = 0.025f;
                         residentialProperties = math.min((buildingPrefab.m_LotWidth + buildingPrefab.m_LotDepth) / 2, 6f);
+
+                        // TODO - Cap signature buildings?
+                        if (lotSize > 36)
+                        {
+                            // Gently scale down the value for very large buildings
+                            lotSize = lotSize / math.log10(lotSize);
+                        }
                         break;
                         // No default
                 }
@@ -120,7 +127,7 @@ namespace WG_CS2_RealisticPopulation.Patches
                 num = (baseNum + (levelBooster * level)) * lotSize * residentialProperties;
                 if (num > 1000)
                 {
-                    // Gently scale down the value for very large buildings
+                    // Scale further down
                     num /= math.log10(num);
                 }
 
