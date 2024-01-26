@@ -3,12 +3,11 @@ Initial Release
 Residential
 - Lower household counts overall
 - Most of the households are given in the first stage, with lower slope upwards
+- Extra reductions for buildings with more than 1000 households
 
 Commercial (except mixed used residential)
-- Slope multiplier increase (per level) changed to 0.25 
-- Initial multiplier changed from 1.0 to 2.25
+- Slightly increased
 
 Industrial
-- Slope multiplier increase (per level) changed to 0.25
-- Non office: Initial multiplier changed from 1.0 to 2.25
-- Office: Initial multiplier changed from 1.0 to 2.5 and workplaces multiplied (approximately) by the average cell length of the building's length and depth
+- More workers in level 1, less in level 5 compared with vanilla
+- Office: Boosted level by the average cell length of the building's length and depth
