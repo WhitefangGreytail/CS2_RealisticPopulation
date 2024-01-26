@@ -93,14 +93,15 @@ namespace WG_CS2_RealisticPopulation.Patches
                     case 1f:
                         // Cap to 3 tiles since it appears the row houses only get built up 3 deep
                         baseNum = 0.75f;
-                        levelBooster = 0.25f;
+                        levelBooster = 0.25f; // To get it to double the cell size by the end
                         lotSize = math.min(buildingPrefab.m_LotDepth, 3);
                         break;
                     case 1.5f:
-                    case 2f:
-                        // Mixed use should be same as medium density since the buildings are a bit bigger (and wall to wall most cases)
-                        // Mixed use can survive better with the commercial also paying rent
                         residentialProperties = 1f;
+                        break;
+                    case 2f:
+                        // Mixed use should be slightly more than medium density since the buildings are usually wall to wall)
+                        residentialProperties = 1.25f;
                         break;
                     case 4f:
                         baseNum = 1.25f;
@@ -109,28 +110,28 @@ namespace WG_CS2_RealisticPopulation.Patches
                         break;
                     case 6f:
                         // Reduce residentialProperties to lower if constrained to a short building by tweaking the multiplier by lot size
-                        // Smaller buildings are difficult to make tall
-                        baseNum = 1.75f;
+                        // Small footprint buildings are difficult to make tall and stable
+                        baseNum = 1.875f;
                         levelBooster = 0.025f;
                         residentialProperties = math.min((buildingPrefab.m_LotWidth + buildingPrefab.m_LotDepth) / 2, 6f);
-
-                        // TODO - Cap signature buildings?
-                        if (lotSize > 36)
+                        /*
+                        if (lotSize == 324)
                         {
-                            // Gently scale down the value for very large buildings
-                            lotSize = lotSize / math.log10(lotSize);
+                            // Really nerf Glass Crown. This is a bad solution
+                            lotSize = 25f;
                         }
+                        */
                         break;
                         // No default
                 }
 
                 num = (baseNum + (levelBooster * level)) * lotSize * residentialProperties;
+                // Cap signature buildings with this division. Not great, not terrible.
                 if (num > 1000)
                 {
-                    // Scale further down
+                    // Gently scale down the value for very large buildings
                     num /= math.log10(num);
                 }
-
                 /*
                 string value = $"GetBuildingPropertyData {buildingPrefab.m_LotWidth}x{buildingPrefab.m_LotDepth} -> {num}";
                 if (!uniqueCalcString.Contains(value))

@@ -26,11 +26,11 @@ namespace WG_CS2_RealisticPopulation.Patches
 			if (((ulong)properties.m_AllowedManufactured & unchecked((ulong)OFFICE_INDUSTRY)) > 0)
 			{
 				// Accounting for the taller buildings. CS2's 'height' and boosting it for high density
-				// TODO - If we can change the space multipler when loading the prefab (if it actually works this way), then remove it
+				// TODO - If we can change the space multipler when loading the prefab (if it actually works this way), then we can remove most of this
 				if (spaceMultiplier >= 4) // High density
                 {
-					baseMultiplier = 25f; // Was 2.5, but absorbing the 10 previously multiplied in spaceMultiplier
-					levelMultiplier = -1f; // Any change must also aborbing the 10 previously multiplied in spaceMultiplier
+					baseMultiplier = 23.5f; // Absorbing the 10 previously multiplied in spaceMultiplier
+					levelMultiplier = -1f; // Any change must also aborbing the 10 previously multiplied in spaceMultiplier.
 					// Implicit floor in the divide 2
 					// Overwrite the space multiplier entirely with pseudo height calc
 					spaceMultiplier = (math.min((building.m_LotSize.x + building.m_LotSize.y) / 2, DataStore.maxOfficeBooster) - 1);
