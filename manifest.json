@@ -1,7 +1,7 @@
 {
   "name": "RealisticPopulation",
-  "version_number": "0.1.0",
-  "website_url": "https://github.com/WhitefangGreytail/WG_CS2_RealisticPopulation",
+  "version_number": "0.2.0",
+  "website_url": "https://github.com/WhitefangGreytail/CS2_RealisticPopulation",
   "description": "A mod to change the household and worker counts of non service buildings",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2100"

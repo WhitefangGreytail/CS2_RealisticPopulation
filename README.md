@@ -1,22 +1,27 @@
 # Cities Skylines 2 : Realistic Population
-
-Changes the calculation for non low density residential households
-Allocation of housing is now front loaded, so that level 1 has the most households with the increases being small there after.
-Industrial and commercial buildings have small capacity boosts
-Offices have large multipliers to the building, ranging from 50 workers for a 2x2 buildings to 2250 for 6x6 plots
-
-The values for high density are based off building density values stated in this video about Hong Kong density
-https://www.youtube.com/watch?v=D86gwTfx4H8
-
+- Changes the calculation for residential, commercial, industrial and office capacities to be a little more reflective of real world while trying to not overload the simulation.
+- Allocation of housing is now front loaded, so that level 1 has most of households, with increases being small there after.
+- Lowered household counts for signature buildings with large footprints
+- Row houses have vastly lesser households than usual.
+- Industrial and commercial buildings have small capacity boosts.
+- Offices have variable multipliers, ranging from small boosts to 2x2 buildings to large multipliers to 6x6 plots.
 
 ## Instructions
-No setting available, although that is something that can be added in the future.
+No mod settings currently av
+Just follow the installation steps below.
 
-### Safe to activate for existing cities
-Existing building capacities are not affected. Only buildings that start their construction while the mod is active has their capacity changed.
+### Caution when activating/removing
+The following applies when activating or removing the mod.
 
-### Safe to remove at any time
-This mod is not required to load any saves made with it.  Saves made with this mod will work perfectly fine without it (workplace calculations have already been stored in the building data on creation). Future buildings will revert to the original calculation.
+Household counts will change on loading. Households over the building limit will leave/move away in time. If many households are added, expect a traffic jam.
+
+Existing worker capacities are not affected. Only buildings that are added after the mod is active has their capacity changed.
+
+#### Obtaining signature office buildings
+As offices have a pseudo-height booster, based off the plot size, it is recommended to zone small plots for offices until you get the building. For example, to obtain the Stylus Tower which requires 12000 tiles of high density offices.
+- With 2x2, 3x2 and 2x4 high density offices, it will mean having up to 150,000 jobs.
+- With 6x6 high density offices, it will mean having up to 375,000 jobs.
+For reference, 12000 tiles is 0.768 sq km
 
 ## Requirements
 - BepInEx 5
@@ -31,13 +36,13 @@ It's usually easiest to contact me at the [**Cities 2 modding Discord**](https:/
 ## Misc
 
 ### Source code
-[Available on GitHub](https://github.com/WhitefangGreytail/WG_CS2_RealisticPopulation) (
-WhitefangGreytail/WG_CS2_RealisticPopulation).
+[Available on GitHub](https://github.com/WhitefangGreytail/CS2_RealisticPopulation) (WhitefangGreytail/CS2_RealisticPopulation).
 
 Be wary of mods without publicly available source code, it's too easy to download executables from somewhere and find it has been changed. Even then, "Trust, but verify", would be the motto I would say here.
 
 ### Credits
     Thanks to captain_on_coit for the Git repo template
+	Thanks to algernon-A for letting me use his readme as a reference
 
 
 ### Why even think about trusting me then?
@@ -49,7 +54,7 @@ The only authorized distribution platforms for this mod, or mods based substanti
 
 Downloading, installation, and use of this mod is at your own risk.
 
->This mod is Copyright 2023 Whitefang Greytail (github.com/WhitefangGreytail).  All rights reserved. This mod is publically free to use, but not to distribute and claim that it is me who is releasing the mod.
+>This mod is Copyright 2024 Whitefang Greytail (github.com/WhitefangGreytail).  All rights reserved. This mod is publically free to use, but not to distribute and claim that it is me who is releasing the mod.
 
 >THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 

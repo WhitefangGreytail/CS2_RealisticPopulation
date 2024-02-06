@@ -29,15 +29,15 @@ namespace WG_CS2_RealisticPopulation.Patches
 				// TODO - If we can change the space multipler when loading the prefab (if it actually works this way), then we can remove most of this
 				if (spaceMultiplier >= 4) // High density
                 {
-					baseMultiplier = 23.5f; // Absorbing the 10 previously multiplied in spaceMultiplier
-					levelMultiplier = -1f; // Any change must also aborbing the 10 previously multiplied in spaceMultiplier.
-					// Implicit floor in the divide 2
+					baseMultiplier = 16.5f; // Absorbing the 10 previously multiplied in spaceMultiplier
+					levelMultiplier = -0.5f; // Any change must also aborbing the 10 previously multiplied in spaceMultiplier.
 					// Overwrite the space multiplier entirely with pseudo height calc
-					spaceMultiplier = (math.min((building.m_LotSize.x + building.m_LotSize.y) / 2, DataStore.maxOfficeBooster) - 1);
+					// Implicit floor in the divide 2
+					spaceMultiplier = math.min((building.m_LotSize.x + building.m_LotSize.y) / 2, DataStore.maxOfficeBooster);
                 }
                 else
 				{
-					baseMultiplier = 4f;
+					baseMultiplier = 5f;
 				}
 			}
 			else if (lotArea > 36) {

@@ -102,18 +102,20 @@ namespace WG_CS2_RealisticPopulation.Patches
                     case 2f:
                         // Mixed use should be slightly more than medium density since the buildings are usually wall to wall)
                         residentialProperties = 1.25f;
+                        // TOOD - Find prefab 
                         break;
                     case 4f:
-                        baseNum = 1.25f;
-                        levelBooster = 0.05f;
-                        residentialProperties = 3f;
+                        baseNum = 1.20f;
+                        levelBooster = 0.01f; // The building height does not change
+                        residentialProperties = 3f; // Shoebox
                         break;
                     case 6f:
                         // Reduce residentialProperties to lower if constrained to a short building by tweaking the multiplier by lot size
                         // Small footprint buildings are difficult to make tall and stable
-                        baseNum = 1.875f;
-                        levelBooster = 0.025f;
-                        residentialProperties = math.min((buildingPrefab.m_LotWidth + buildingPrefab.m_LotDepth) / 2, 6f);
+                        // TODO - Really find the prefab height
+                        baseNum = 2.15f;
+                        levelBooster = 0.05f;
+                        residentialProperties = math.min((buildingPrefab.m_LotWidth + buildingPrefab.m_LotDepth) / 2, 5f);
                         /*
                         if (lotSize == 324)
                         {
