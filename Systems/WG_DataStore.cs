@@ -13,5 +13,38 @@ namespace WG_CS2_RealisticPopulation
     public class DataStore
     {
         public static int maxOfficeBooster = 5;
+
+        // Settings
+        /* Residential
+         * Low density houses (1, 2)
+         * Row houses (1x -> 2x)
+         * Medium density
+         * Mixed 
+         * 
+         */
+
+        /* 
+         * Commercial
+         * 
+         */
+
+        /* 
+         * Industrial extractor
+         * 
+         */
+
+
+        /* 
+         * Industrial
+         * 
+         */
+
+        /*
+         * Office
+         * Enable Psuedo height checkbox
+         * Slider for multiplers - 0.1 (cheating for signature building), 0.5, 1 (original) -> 4 (matching reality, but not really playable)
+         * 
+         * 
+         */
     }
 }

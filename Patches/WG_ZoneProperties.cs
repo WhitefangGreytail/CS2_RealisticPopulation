@@ -61,27 +61,46 @@ namespace WG_CS2_RealisticPopulation.Patches
             float num = residentialProperties; // Was 1f, combine the multiplication below
             float lotSize = (float)buildingPrefab.lotSize;
             List<ComponentBase> ogd = new List<ComponentBase>();
-            if (buildingPrefab.GetComponents(ogd)) {
-                /*
-                Game.Prefabs.BuildingPrefab
-                Game.Prefabs.SpawnableBuilding <-
-                Game.Prefabs.ObjectSubObjects
-                Game.Prefabs.ObjectSubAreas
-                Game.Prefabs.ObjectSubNets
-                 */
-                foreach (ComponentBase item in ogd)
-                {
-                    switch (item.GetType())
-                    {
-                        //case 
-                        default:
-                            break;
-                    }
-                }
-            }
-
             if (__instance.m_ScaleResidentials)
             {
+                if (buildingPrefab.GetComponents(ogd))
+                {
+                    /*
+                    Game.Prefabs.BuildingPrefab <- Values may be here
+                    Game.Prefabs.SpawnableBuilding <- Values may be here
+                    Game.Prefabs.ObjectSubObjects - Wonder if I can shake out the building only from here
+                    Game.Prefabs.ObjectSubAreas
+                    Game.Prefabs.ObjectSubNets
+                     */
+                    foreach (ComponentBase item in ogd)
+                    {
+                        //System.Console.WriteLine(item.GetType().ToString());
+                        switch (item.GetType().ToString())
+                        {
+                            case "Game.Prefabs.BuildingPrefab":
+                                Game.Prefabs.BuildingPrefab bp = (Game.Prefabs.BuildingPrefab)item;
+                                foreach (var mesh in bp.m_Meshes)
+                                {
+                                    var components = mesh.m_Mesh.prefab.components;
+                                    foreach (var component in components)
+                                    {
+                                        if (component.name == "LodProperties")
+                                        {
+                                            var lod = (LodProperties)component;
+                                            var prefab = (Game.Prefabs.RenderPrefab)lod.prefab;
+                                            System.Console.WriteLine(bp.name + " height: " + prefab.bounds.y.max);
+                                            // prefab.bounds.y appears to be the height of the prefab
+                                            
+                                        }
+                                    }
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+
                 // m_ResidentialProperties appears to signify the type of residential
                 // 1 - Row housing
                 // 1.5 - Medium

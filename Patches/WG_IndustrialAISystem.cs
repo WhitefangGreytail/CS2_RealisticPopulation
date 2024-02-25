@@ -37,7 +37,7 @@ namespace WG_CS2_RealisticPopulation.Patches
                 }
                 else
 				{
-					baseMultiplier = 5f;
+					baseMultiplier = 8f;
 				}
 			}
 			else if (lotArea > 36) {
