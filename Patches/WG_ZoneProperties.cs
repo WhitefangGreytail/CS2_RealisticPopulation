@@ -61,46 +61,53 @@ namespace WG_CS2_RealisticPopulation.Patches
             float num = residentialProperties; // Was 1f, combine the multiplication below
             float lotSize = (float)buildingPrefab.lotSize;
             List<ComponentBase> ogd = new List<ComponentBase>();
-            if (__instance.m_ScaleResidentials)
+            float buildingHeight = 1f;
+            if (buildingPrefab.GetComponents(ogd))
             {
-                if (buildingPrefab.GetComponents(ogd))
+                /*
+                Game.Prefabs.BuildingPrefab <- Values may be here
+                Game.Prefabs.SpawnableBuilding <- Values may be here
+                Game.Prefabs.ObjectSubObjects - Wonder if I can shake out the building only from here
+                Game.Prefabs.ObjectSubAreas
+                Game.Prefabs.ObjectSubNets
+                 */
+
+                // This function will have a pass over all RICO buildings. Nice!
+                foreach (ComponentBase item in ogd)
                 {
-                    /*
-                    Game.Prefabs.BuildingPrefab <- Values may be here
-                    Game.Prefabs.SpawnableBuilding <- Values may be here
-                    Game.Prefabs.ObjectSubObjects - Wonder if I can shake out the building only from here
-                    Game.Prefabs.ObjectSubAreas
-                    Game.Prefabs.ObjectSubNets
-                     */
-                    foreach (ComponentBase item in ogd)
+                    //System.Console.WriteLine(item.GetType().ToString());
+                    switch (item.GetType().ToString())
                     {
-                        //System.Console.WriteLine(item.GetType().ToString());
-                        switch (item.GetType().ToString())
-                        {
-                            case "Game.Prefabs.BuildingPrefab":
-                                Game.Prefabs.BuildingPrefab bp = (Game.Prefabs.BuildingPrefab)item;
-                                foreach (var mesh in bp.m_Meshes)
+                        case "Game.Prefabs.BuildingPrefab":
+                            Game.Prefabs.BuildingPrefab bp = (Game.Prefabs.BuildingPrefab)item;
+                            foreach (var mesh in bp.m_Meshes)
+                            {
+                                var components = mesh.m_Mesh.prefab.components;
+                                foreach (var component in components)
                                 {
-                                    var components = mesh.m_Mesh.prefab.components;
-                                    foreach (var component in components)
+                                    if (component.name == "LodProperties")
                                     {
-                                        if (component.name == "LodProperties")
-                                        {
-                                            var lod = (LodProperties)component;
-                                            var prefab = (Game.Prefabs.RenderPrefab)lod.prefab;
-                                            System.Console.WriteLine(bp.name + " height: " + prefab.bounds.y.max);
-                                            // prefab.bounds.y appears to be the height of the prefab
-                                            
-                                        }
+                                        var lod = (LodProperties)component;
+                                        var prefab = (Game.Prefabs.RenderPrefab)lod.prefab;
+                                        var width = (prefab.bounds.x.max - prefab.bounds.x.min);
+                                        var depth = (prefab.bounds.z.max - prefab.bounds.z.min);
+                                        var height = prefab.bounds.y.max;
+                                        System.Console.WriteLine(bp.name + ": " + width + "," + depth + "," + height);
+                                        buildingHeight = prefab.bounds.y.max;
+                                        // prefab.bounds.y appears to be the height of the prefab
+
                                     }
                                 }
-                                break;
-                            default:
-                                break;
-                        }
+                            }
+                            break;
+                        default:
+                            break;
                     }
                 }
+            }
 
+            if (__instance.m_ScaleResidentials)
+            {
                 // m_ResidentialProperties appears to signify the type of residential
                 // 1 - Row housing
                 // 1.5 - Medium
