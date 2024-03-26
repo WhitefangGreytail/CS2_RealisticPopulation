@@ -60,8 +60,11 @@ namespace WG_CS2_RealisticPopulation.Patches
             float residentialProperties = __instance.m_ResidentialProperties;
             float num = residentialProperties; // Was 1f, combine the multiplication below
             float lotSize = (float)buildingPrefab.lotSize;
+            // No default
+            float spaceLeftAfterCommonArea = 0.9f;
             List<ComponentBase> ogd = new List<ComponentBase>();
             float buildingHeight = 1f;
+            float buildingFootprint = 1f;
             if (buildingPrefab.GetComponents(ogd))
             {
                 /*
@@ -89,13 +92,18 @@ namespace WG_CS2_RealisticPopulation.Patches
                                     {
                                         var lod = (LodProperties)component;
                                         var prefab = (Game.Prefabs.RenderPrefab)lod.prefab;
+                                        // These values helps to shrinkwrap the volume better than using the plot size
+                                        /*
+                                         * Fix homeless, can be used
                                         var width = (prefab.bounds.x.max - prefab.bounds.x.min);
                                         var depth = (prefab.bounds.z.max - prefab.bounds.z.min);
                                         var height = prefab.bounds.y.max;
                                         System.Console.WriteLine(bp.name + ": " + width + "," + depth + "," + height);
+                                        buildingFootprint = width * depth;
+                                        */
                                         buildingHeight = prefab.bounds.y.max;
                                         // prefab.bounds.y appears to be the height of the prefab
-
+                                        continue;
                                     }
                                 }
                             }
@@ -114,6 +122,8 @@ namespace WG_CS2_RealisticPopulation.Patches
                 // 2 - Mixed
                 // 4 - Low rent
                 // 6 - Tower
+                float floorHeight = 3f;
+                float floorSpacePerHousehold = 150.0f;
                 switch (residentialProperties)
                 {
                     case 1f:
@@ -124,16 +134,20 @@ namespace WG_CS2_RealisticPopulation.Patches
                         break;
                     case 1.5f:
                         residentialProperties = 1f;
+                        spaceLeftAfterCommonArea = 0.8f;
                         break;
                     case 2f:
                         // Mixed use should be slightly more than medium density since the buildings are usually wall to wall)
                         residentialProperties = 1.25f;
                         // TOOD - Find prefab 
+                        spaceLeftAfterCommonArea = 0.8f;
                         break;
                     case 4f:
                         baseNum = 1.20f;
                         levelBooster = 0.01f; // The building height does not change
-                        residentialProperties = 3f; // Shoebox
+                        residentialProperties = 2.5f; // Shoebox
+                        floorSpacePerHousehold = 100f;
+                        spaceLeftAfterCommonArea = 0.8f;
                         break;
                     case 6f:
                         // Reduce residentialProperties to lower if constrained to a short building by tweaking the multiplier by lot size
@@ -142,24 +156,20 @@ namespace WG_CS2_RealisticPopulation.Patches
                         baseNum = 2.15f;
                         levelBooster = 0.05f;
                         residentialProperties = math.min((buildingPrefab.m_LotWidth + buildingPrefab.m_LotDepth) / 2, 5f);
-                        /*
-                        if (lotSize == 324)
-                        {
-                            // Really nerf Glass Crown. This is a bad solution
-                            lotSize = 25f;
-                        }
-                        */
+                        floorHeight = 4f;
+                        spaceLeftAfterCommonArea = 0.75f;
                         break;
                         // No default
                 }
 
-                num = (baseNum + (levelBooster * level)) * lotSize * residentialProperties;
+                //num = (baseNum + (levelBooster * level)) * lotSize * residentialProperties;
+                num = (spaceLeftAfterCommonArea * buildingFootprint * math.floor(buildingHeight / floorHeight)) / floorSpacePerHousehold;
                 // Cap signature buildings with this division. Not great, not terrible.
-                if (num > 1000)
+                /*if (num > 1000)
                 {
                     // Gently scale down the value for very large buildings
                     num /= math.log10(num);
-                }
+                }*/
                 /*
                 string value = $"GetBuildingPropertyData {buildingPrefab.m_LotWidth}x{buildingPrefab.m_LotDepth} -> {num}";
                 if (!uniqueCalcString.Contains(value))

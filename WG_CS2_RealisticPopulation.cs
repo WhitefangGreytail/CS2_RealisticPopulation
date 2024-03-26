@@ -1,4 +1,5 @@
 using Colossal.IO.AssetDatabase;
+using Colossal.Logging;
 using Game;
 using Game.Audio;
 using Game.Modding;
@@ -34,7 +35,15 @@ namespace WG_CS2_RealisticPopulation
 
         public void OnLoad()
         {
-            throw new System.NotImplementedException();
+            Log = LogManager.GetLogger(nameof(WG_CS2_RealisticPopulation));
+
+#if VERBOSE
+            Log.effectivenessLevel = Level.Verbose;
+#elif DEBUG
+            Log.effectivenessLevel = Level.Debug;
+#endif
+            GetCallingMethod()
+            Log.Info("Loading..");
         }
     }
 

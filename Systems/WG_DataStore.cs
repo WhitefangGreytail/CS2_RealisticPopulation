@@ -10,9 +10,22 @@ using UnityEngine.Scripting;
 
 namespace WG_CS2_RealisticPopulation
 {
+    public struct ResidentialType
+    {
+        float sqmPerHousehold;
+        float floorHeight;
+        float commonAreaPerFloor; // Should have max of 0.2
+    }
+
+    
+
     public class DataStore
     {
+        public static bool fullCapacity = false;
         public static int maxOfficeBooster = 5;
+        public static Dictionary<int, ResidentialType> residentialInfo = new Dictionary<int, ResidentialType>();
+        //spacePerHousehold
+        //percentage of building used for common area
 
         // Settings
         /* Residential
@@ -25,11 +38,6 @@ namespace WG_CS2_RealisticPopulation
 
         /* 
          * Commercial
-         * 
-         */
-
-        /* 
-         * Industrial extractor
          * 
          */
 

@@ -8,6 +8,8 @@ using HarmonyLib;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using Colossal.Logging;
+using Game.Modding;
 
 #if BEPINEX_V6
     using BepInEx.Unity.Mono;

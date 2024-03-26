@@ -1,0 +1,16 @@
+# 0.1.1
+Fix Readme file
+
+# 0.1.0
+Initial Release
+Residential
+- Lower household counts overall
+- Most of the households are given in the first stage, with lower slope upwards
+- Extra reductions for buildings with more than 1000 households
+
+Commercial (except mixed used residential)
+- Slightly increased
+
+Industrial
+- More workers in level 1, less in level 5 compared with vanilla
+- Office: Boosted level by the average cell length of the building's length and depth
