@@ -4,7 +4,7 @@ using Game.Prefabs;
 using Game.Companies;
 using Game.Simulation;
 
-namespace WG_CS2_RealisticPopulation.Patches
+namespace WG_CS2_RealisticPopulation
 {
 	[HarmonyPatch(typeof(CommercialAISystem), nameof(CommercialAISystem.GetFittingWorkers))]
 	class CommercialPatch

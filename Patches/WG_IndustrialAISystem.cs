@@ -5,7 +5,7 @@ using Game.Simulation;
 using Unity.Mathematics;
 using Game.Economy;
 
-namespace WG_CS2_RealisticPopulation.Patches
+namespace WG_CS2_RealisticPopulation
 {
 	[HarmonyPatch(typeof(IndustrialAISystem), nameof(IndustrialAISystem.GetFittingWorkers))]
 	class IndustrialPatch
@@ -33,7 +33,7 @@ namespace WG_CS2_RealisticPopulation.Patches
 					levelMultiplier = -1f; // Any change must also aborbing the 10 previously multiplied in spaceMultiplier.
 					// Implicit floor in the divide 2
 					// Overwrite the space multiplier entirely with pseudo height calc
-					spaceMultiplier = (math.min((building.m_LotSize.x + building.m_LotSize.y) / 2, DataStore.maxOfficeBooster) - 1);
+					spaceMultiplier = math.min((building.m_LotSize.x + building.m_LotSize.y), DataStore.maxOfficeBooster) / 2.0f;
                 }
                 else
 				{
@@ -48,7 +48,7 @@ namespace WG_CS2_RealisticPopulation.Patches
 
 			// This result for a new building results in a company with 2/3 of the capacity in an established city. The rest of the capacity will be filled as the company grows larger
 			__result = Mathf.CeilToInt(processData.m_MaxWorkersPerCell * lotArea * (baseMultiplier + levelMultiplier * (float)level) * spaceMultiplier);
-			//System.Console.WriteLine($"I({level}) - {__result}: {processData.m_MaxWorkersPerCell},{building.m_LotSize.x},{building.m_LotSize.y},{level},{properties.m_SpaceMultiplier}");
+			System.Console.WriteLine($"I({level}) - {__result}: {processData.m_MaxWorkersPerCell},{building.m_LotSize.x},{building.m_LotSize.y},{level},{properties.m_SpaceMultiplier}");
 			return false; // Skip original
 		}
 	}
