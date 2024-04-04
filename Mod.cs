@@ -3,9 +3,11 @@ using Colossal.Logging;
 using Game;
 using Game.Modding;
 using Game.SceneFlow;
-using Game.SceneFlow;
+using HarmonyLib;
 using System;
+using System.Reflection;
 using Unity.Entities;
+using UnityEngine;
 using WG_CS2_RealisticPopulation;
 
 namespace RealisticPopulation
@@ -17,6 +19,11 @@ namespace RealisticPopulation
 
         public void OnLoad(UpdateSystem updateSystem)
         {
+
+            var harmony = new Harmony("WG_RealisticPopulation");
+            Harmony.DEBUG = true;
+            var assembly = Assembly.GetExecutingAssembly();
+            harmony.PatchAll(assembly);
 
             if (GameManager.instance.modManager.TryGetExecutableAsset(this, out var asset))
                 log.Info($"Current mod asset at {asset.path}");
