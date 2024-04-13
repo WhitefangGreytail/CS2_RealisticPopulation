@@ -1,5 +1,6 @@
 ﻿using Colossal.IO.AssetDatabase;
 using Colossal.Logging;
+using CS2_RealisticPopulation.Patches;
 using Game;
 using Game.Modding;
 using Game.SceneFlow;
@@ -7,8 +8,10 @@ using HarmonyLib;
 using System;
 using System.Reflection;
 using Unity.Entities;
+using Unity.Jobs;
 using UnityEngine;
 using WG_CS2_RealisticPopulation;
+using WG_CS2_RealisticPopulation.Systems;
 
 namespace RealisticPopulation
 {
@@ -19,7 +22,6 @@ namespace RealisticPopulation
 
         public void OnLoad(UpdateSystem updateSystem)
         {
-
             var harmony = new Harmony("WG_RealisticPopulation");
             Harmony.DEBUG = true;
             var assembly = Assembly.GetExecutingAssembly();
@@ -31,15 +33,17 @@ namespace RealisticPopulation
             m_Setting = new Setting(this);
             m_Setting.RegisterInOptionsUI();
             GameManager.instance.localizationManager.AddSource("en-US", new LocaleEN(m_Setting));
+            AssetDatabase.global.LoadSettings(nameof(RealisticPopulation), m_Setting, new Setting(this));
 
             foreach (var item in DataStore.defaultHousehold)
             {
                 DataStore.householdCache.Add(item.Key, item.Value);
             }
 
-            //Game.Prefabs.ZoneProperties.
+            // Set up Job ready to fire when the save file is loading
+            DoPatching patcher = new DoPatching(updateSystem);
+            updateSystem.UpdateAt<ChangeSpawnable>(SystemUpdatePhase.Modification1);
 
-            AssetDatabase.global.LoadSettings(nameof(RealisticPopulation), m_Setting, new Setting(this));
             log.Info(nameof(OnLoad) + " loaded.");
         }
 

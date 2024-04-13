@@ -38,6 +38,10 @@ Be wary of mods without publicly available source code, it's too easy to downloa
 
 ### Credits
     Thanks to captain_on_coit for the Git repo template
+    Thanks to algernon_A for letting me use this readme template
+    Thanks to 89pleasure, optimus-code and Rebecca and the Cities2Modding community for their help
+    and
+    Thanks to Colossal Order for the game
 
 
 ### Why even think about trusting me then?
