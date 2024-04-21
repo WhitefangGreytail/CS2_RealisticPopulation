@@ -22,6 +22,15 @@ using System.Runtime.CompilerServices;
 
 namespace CS2_RealisticPopulation.Patches
 {
+    /*
+     * [Error  : Unity Log] [SceneFlow] [CRITICAL]  System update error during PrefabUpdate->ObjectInitializeSystem: System.Collections.Generic.KeyNotFoundException: The given key 'FountainPlaza01 Mesh (Game.Prefabs.RenderPrefab)' was not present in the dictionary.
+  at System.Collections.Generic.Dictionary`2[TKey,TValue].get_Item (TKey key) [0x0001e] in <b89873cb176e44a995a4781c7487d410>:0
+  at Game.Prefabs.PrefabSystem.GetEntity (Game.Prefabs.PrefabBase prefab) [0x00000] in <feff44428bf3435d97abac1bad09fa9d>:0
+  at Game.Prefabs.ObjectInitializeSystem.InitializePrefab (Game.Prefabs.ObjectGeometryPrefab objectPrefab, Game.Prefabs.PlaceableObjectData placeableObjectData, Game.Prefabs.ObjectGeometryData& objectGeometryData, Game.Prefabs.GrowthScaleData& growthScaleData, Game.Prefabs.StackData& stackData, Game.Prefabs.QuantityObjectData& quantityObjectData, Game.Prefabs.CreatureData& creatureData, Unity.Entities.DynamicBuffer`1[T] meshes, Unity.Entities.DynamicBuffer`1[T] meshGroups, Unity.Entities.DynamicBuffer`1[T] characterElements, System.Boolean isPlantObject, System.Boolean isHumanObject, System.Boolean isBuildingObject, System.Boolean isVehicleObject, System.Boolean isCreatureObject) [0x00448] in <feff44428bf3435d97abac1bad09fa9d>:0
+  at Game.Prefabs.ObjectInitializeSystem.OnUpdate () [0x00681] in <feff44428bf3435d97abac1bad09fa9d>:0
+  at Unity.Entities.SystemBase.Update () [0x0004e] in <42dd0aeaaef34ed8acb4b4fe5f093234>:0
+  at Game.UpdateSystem.Update (Game.SystemUpdatePhase phase) [0x0004e] in <feff44428bf3435d97abac1bad09fa9d>:0
+     */
 
     // Referencing from https://docs.unity3d.com/Manual/JobSystemCreatingJobs.html
     // Not sure what version CS2 is but this seems ok
@@ -31,11 +40,7 @@ namespace CS2_RealisticPopulation.Patches
     {
         public ComponentTypeHandle<SpawnableBuildingData> spawnableDataHandle; // TODO - Try to replace
         public ComponentTypeHandle<BuildingPropertyData> buildingPropertyDataHandle;
-        public ComponentTypeHandle<PrefabRef> m_PrefabType;
-
-        public EntityCommandBuffer.ParallelWriter Ecb;
-        public EntityTypeHandle EntityHandle;
-        public ComponentLookup<BuildingPropertyData> BuildingPropertyDataLookup;
+        public ComponentTypeHandle<PrefabRef> prefabRefHandle;
 
         public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
         {

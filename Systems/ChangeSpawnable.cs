@@ -21,12 +21,11 @@ namespace WG_CS2_RealisticPopulation.Systems
 
         protected override void OnCreate()
         {
+            // Might have to combine?
             m_SpawnableQuery = new EntityQueryBuilder(Allocator.Temp)
-                .WithAll<SpawnableBuildingData>()
-                .WithAll<BuildingData>()
-                .WithAll<PrefabData>()
-                .WithAll<BuildingPropertyData>()
+                .WithAll<PrefabData, SpawnableBuildingData, BuildingData, BuildingPropertyData>()
                 .Build(this);
+            RequireForUpdate(m_SpawnableQuery);
 
             Mod.log.Info(nameof(ChangeSpawnable) + " job created");
             base.OnCreate();
@@ -40,8 +39,11 @@ namespace WG_CS2_RealisticPopulation.Systems
             {
                 Mod.log.Info("Game mode");
                 // Instantiate the job struct
-                var changeSpawnablesJob
-                    = new ChangeSpawnablesJob();
+                var changeSpawnablesJob = new ChangeSpawnablesJob();
+                changeSpawnablesJob.spawnableDataHandle = this.GetComponentTypeHandle<SpawnableBuildingData>(false);
+                changeSpawnablesJob.buildingPropertyDataHandle = this.GetComponentTypeHandle<BuildingPropertyData>(true);
+                changeSpawnablesJob.prefabRefHandle = this.GetComponentTypeHandle<PrefabRef>(false);
+
                 // Schedule the job
                 this.Dependency
                     = changeSpawnablesJob.ScheduleParallel(m_SpawnableQuery, this.Dependency);
