@@ -4,10 +4,12 @@ using Game.Prefabs;
 using Game.Simulation;
 using Unity.Mathematics;
 using Game.Economy;
+using CS2_RealisticPopulation;
+using RealisticPopulation;
 
 namespace WG_CS2_RealisticPopulation
 {
-	[HarmonyPatch(typeof(IndustrialAISystem), nameof(IndustrialAISystem.GetFittingWorkers))]
+    [HarmonyPatch(typeof(IndustrialAISystem), nameof(IndustrialAISystem.GetFittingWorkers))]
 	class IndustrialPatch
 	{	
 		// Could expand these to include different types of industry combinations

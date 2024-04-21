@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Unity.Entities;
 using RealisticPopulation;
 using System;
+using CS2_RealisticPopulation;
 
 /*
  * Scraps

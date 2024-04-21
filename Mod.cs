@@ -1,5 +1,6 @@
 ﻿using Colossal.IO.AssetDatabase;
 using Colossal.Logging;
+using CS2_RealisticPopulation;
 using CS2_RealisticPopulation.Patches;
 using Game;
 using Game.Modding;
@@ -10,7 +11,6 @@ using System.Reflection;
 using Unity.Entities;
 using Unity.Jobs;
 using UnityEngine;
-using WG_CS2_RealisticPopulation;
 using WG_CS2_RealisticPopulation.Systems;
 
 namespace RealisticPopulation
@@ -41,10 +41,11 @@ namespace RealisticPopulation
             }
 
             // Set up Job ready to fire when the save file is loading
-            DoPatching patcher = new DoPatching(updateSystem);
-            updateSystem.UpdateAt<ChangeSpawnable>(SystemUpdatePhase.Modification1);
+            //DoPatching patcher = new DoPatching(updateSystem);
+            log.Info(nameof(ChangeSpawnable) + " job added");
+            updateSystem.UpdateAt<ChangeSpawnable>(SystemUpdatePhase.PrefabUpdate); // Might need to keep changing
 
-            log.Info(nameof(OnLoad) + " loaded.");
+            log.Info(nameof(RealisticPopulation) + " loaded");
         }
 
         public void OnDispose()
