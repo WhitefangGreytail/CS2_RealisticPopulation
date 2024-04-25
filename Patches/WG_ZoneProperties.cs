@@ -1,18 +1,15 @@
 using HarmonyLib;
-using UnityEngine;
 using Game.Prefabs;
-using Game.Simulation;
 using Unity.Mathematics;
 using Game.Economy;
 using System.Collections.Generic;
 using Unity.Entities;
 using RealisticPopulation;
 using System;
-using CS2_RealisticPopulation;
 
 /*
  * Scraps
- * 
+ * h
  * This code has flow on effects across the entire simulation. Maybe best to just leave it.
 */
 namespace WG_CS2_RealisticPopulation
@@ -122,58 +119,7 @@ namespace WG_CS2_RealisticPopulation
             {
                 if (__instance.m_ScaleResidentials)
                 {
-                    // m_ResidentialProperties appears to signify the type of residential
-                    // 1 - Row housing
-                    // 1.5 - Medium
-                    // 2 - Mixed
-                    // 4 - Low rent
-                    // 6 - Tower
-                    switch (residentialProperties)
-                    {
-                        case 1f:
-                            // Cap to 3 tiles since it appears the row houses only get built up 3 deep
-                            baseNum = 0.75f;
-                            levelBooster = 0.25f; // To get it to double the cell size by the end
-                            lotSize = math.min(buildingPrefab.m_LotDepth, 3);
-                            break;
-                        case 1.5f:
-                            residentialProperties = 1f;
-                            break;
-                        case 2f:
-                            // Mixed use should be slightly more than medium density since the buildings are usually wall to wall)
-                            residentialProperties = 1.25f;
-                            break;
-                        case 4f:
-                            baseNum = 1.25f;
-                            levelBooster = 0.05f;
-                            residentialProperties = 3f;
-                            break;
-                        case 6f:
-                            // Reduce residentialProperties to lower if constrained to a short building by tweaking the multiplier by lot size
-                            // Small footprint buildings are difficult to make tall and stable
-                            baseNum = 1.875f;
-                            levelBooster = 0.025f;
-                            residentialProperties = math.min((buildingPrefab.m_LotWidth + buildingPrefab.m_LotDepth) / 2, 6f);
-                            /*
-                            if (lotSize == 324)
-                            {
-                                // Really nerf Glass Crown. This is a bad solution
-                                lotSize = 25f;
-                            }
-                            */
-                            break;
-                            // No default
-                    }
-
-                    num = (baseNum + (levelBooster * level)) * lotSize * residentialProperties;
-                    /*
-                    string value = $"GetBuildingPropertyData {buildingPrefab.m_LotWidth}x{buildingPrefab.m_LotDepth} -> {num}";
-                    if (!uniqueCalcString.Contains(value))
-                    {
-                        System.Console.WriteLine(value);
-                        uniqueCalcString.Add(value);
-                    }
-                    */
+                    num = NewMethod(buildingPrefab, level, ref baseNum, ref levelBooster, ref residentialProperties, ref lotSize);
                 }
             }
             else
@@ -189,6 +135,64 @@ namespace WG_CS2_RealisticPopulation
             result.m_AllowedStored = EconomyUtils.GetResources(__instance.m_AllowedStored);
             result.m_SpaceMultiplier = __instance.m_SpaceMultiplier; // Cannot change, the system won't be able to find it
             return result;
+        }
+
+        private static float NewMethod(BuildingPrefab buildingPrefab, byte level, ref float baseNum, ref float levelBooster, ref float residentialProperties, ref float lotSize)
+        {
+            float num;
+            // m_ResidentialProperties appears to signify the type of residential
+            // 1 - Row housing
+            // 1.5 - Medium
+            // 2 - Mixed
+            // 4 - Low rent
+            // 6 - Tower
+            switch (residentialProperties)
+            {
+                case 1f:
+                    // Cap to 3 tiles since it appears the row houses only get built up 3 deep
+                    baseNum = 0.75f;
+                    levelBooster = 0.25f; // To get it to double the cell size by the end
+                    lotSize = math.min(buildingPrefab.m_LotDepth, 3);
+                    break;
+                case 1.5f:
+                    residentialProperties = 1f;
+                    break;
+                case 2f:
+                    // Mixed use should be slightly more than medium density since the buildings are usually wall to wall)
+                    residentialProperties = 1.25f;
+                    break;
+                case 4f:
+                    baseNum = 1.25f;
+                    levelBooster = 0.05f;
+                    residentialProperties = 3f;
+                    break;
+                case 6f:
+                    // Reduce residentialProperties to lower if constrained to a short building by tweaking the multiplier by lot size
+                    // Small footprint buildings are difficult to make tall and stable
+                    baseNum = 1.875f;
+                    levelBooster = 0.025f;
+                    residentialProperties = math.min((buildingPrefab.m_LotWidth + buildingPrefab.m_LotDepth) / 2, 6f);
+                    /*
+                    if (lotSize == 324)
+                    {
+                        // Really nerf Glass Crown. This is a bad solution
+                        lotSize = 25f;
+                    }
+                    */
+                    break;
+                    // No default
+            }
+
+            num = (baseNum + (levelBooster * level)) * lotSize * residentialProperties;
+            /*
+            string value = $"GetBuildingPropertyData {buildingPrefab.m_LotWidth}x{buildingPrefab.m_LotDepth} -> {num}";
+            if (!uniqueCalcString.Contains(value))
+            {
+                System.Console.WriteLine(value);
+                uniqueCalcString.Add(value);
+            }
+            */
+            return num;
         }
     }
 }

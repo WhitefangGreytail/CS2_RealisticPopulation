@@ -17,11 +17,10 @@ namespace WG_CS2_RealisticPopulation.Systems
     {
         private EntityQuery m_SpawnableQuery;
 
-        public ComponentTypeHandle<SpawnableBuildingData> m_ACCT_Spawnable;
-
         protected override void OnCreate()
         {
             // Might have to combine?
+            // Can only be structs to get it in an array easily
             m_SpawnableQuery = new EntityQueryBuilder(Allocator.Temp)
                 .WithAll<PrefabData, SpawnableBuildingData, BuildingData, BuildingPropertyData>()
                 .Build(this);
@@ -42,7 +41,7 @@ namespace WG_CS2_RealisticPopulation.Systems
                 var changeSpawnablesJob = new ChangeSpawnablesJob();
                 changeSpawnablesJob.spawnableDataHandle = this.GetComponentTypeHandle<SpawnableBuildingData>(false);
                 changeSpawnablesJob.buildingPropertyDataHandle = this.GetComponentTypeHandle<BuildingPropertyData>(true);
-                changeSpawnablesJob.prefabRefHandle = this.GetComponentTypeHandle<PrefabRef>(false);
+                changeSpawnablesJob.bdHandle = this.GetComponentTypeHandle<BuildingData>(false);
 
                 // Schedule the job
                 this.Dependency

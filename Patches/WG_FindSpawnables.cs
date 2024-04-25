@@ -19,17 +19,14 @@ using RealisticPopulation;
 using UnityEngine.Windows;
 using Game.Tools;
 using System.Runtime.CompilerServices;
+using System.Xml;
+using System.Runtime.InteropServices;
+using System.Drawing;
 
 namespace CS2_RealisticPopulation.Patches
 {
     /*
-     * [Error  : Unity Log] [SceneFlow] [CRITICAL]  System update error during PrefabUpdate->ObjectInitializeSystem: System.Collections.Generic.KeyNotFoundException: The given key 'FountainPlaza01 Mesh (Game.Prefabs.RenderPrefab)' was not present in the dictionary.
-  at System.Collections.Generic.Dictionary`2[TKey,TValue].get_Item (TKey key) [0x0001e] in <b89873cb176e44a995a4781c7487d410>:0
-  at Game.Prefabs.PrefabSystem.GetEntity (Game.Prefabs.PrefabBase prefab) [0x00000] in <feff44428bf3435d97abac1bad09fa9d>:0
-  at Game.Prefabs.ObjectInitializeSystem.InitializePrefab (Game.Prefabs.ObjectGeometryPrefab objectPrefab, Game.Prefabs.PlaceableObjectData placeableObjectData, Game.Prefabs.ObjectGeometryData& objectGeometryData, Game.Prefabs.GrowthScaleData& growthScaleData, Game.Prefabs.StackData& stackData, Game.Prefabs.QuantityObjectData& quantityObjectData, Game.Prefabs.CreatureData& creatureData, Unity.Entities.DynamicBuffer`1[T] meshes, Unity.Entities.DynamicBuffer`1[T] meshGroups, Unity.Entities.DynamicBuffer`1[T] characterElements, System.Boolean isPlantObject, System.Boolean isHumanObject, System.Boolean isBuildingObject, System.Boolean isVehicleObject, System.Boolean isCreatureObject) [0x00448] in <feff44428bf3435d97abac1bad09fa9d>:0
-  at Game.Prefabs.ObjectInitializeSystem.OnUpdate () [0x00681] in <feff44428bf3435d97abac1bad09fa9d>:0
-  at Unity.Entities.SystemBase.Update () [0x0004e] in <42dd0aeaaef34ed8acb4b4fe5f093234>:0
-  at Game.UpdateSystem.Update (Game.SystemUpdatePhase phase) [0x0004e] in <feff44428bf3435d97abac1bad09fa9d>:0
+
      */
 
     // Referencing from https://docs.unity3d.com/Manual/JobSystemCreatingJobs.html
@@ -38,9 +35,9 @@ namespace CS2_RealisticPopulation.Patches
     //[BurstCompile]
     public struct ChangeSpawnablesJob : IJobChunk
     {
-        public ComponentTypeHandle<SpawnableBuildingData> spawnableDataHandle; // TODO - Try to replace
-        public ComponentTypeHandle<BuildingPropertyData> buildingPropertyDataHandle;
-        public ComponentTypeHandle<PrefabRef> prefabRefHandle;
+        public ComponentTypeHandle<BuildingPropertyData> buildingPropertyDataHandle; // To change the data
+        public ComponentTypeHandle<SpawnableBuildingData> spawnableDataHandle; // To get the level out
+        public ComponentTypeHandle<BuildingData> bdHandle;
 
         public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
         {
@@ -49,33 +46,92 @@ namespace CS2_RealisticPopulation.Patches
             // Referencing Game.Simulation.ResidentialDemandSystem.UpdateResidentialDemandJob for the best part
             NativeArray<BuildingPropertyData> bpdArray = chunk.GetNativeArray(ref buildingPropertyDataHandle);
             NativeArray<SpawnableBuildingData> spdArray = chunk.GetNativeArray(ref spawnableDataHandle);
+            NativeArray<BuildingData> bArray = chunk.GetNativeArray(ref bdHandle);
+
             // Too bad these are structs. Can't extend </3
-            Mod.log.Info($"Starting + {bpdArray.Length}");
             for (int i = 0; i < bpdArray.Length; i++)
             {
                 // Need ZoneProperties, BuildingPrefab buildingPrefab, level
                 BuildingPropertyData buildingPropertyData = bpdArray[i];
                 SpawnableBuildingData spawnableBuildingData = spdArray[i];
+                BuildingData bbData = bArray[i];
+                
 
-                //DynamicBuffer<SubMesh> subMeshes = subMeshBufferAccessor[i];
+                if (buildingPropertyData.m_ResidentialProperties > 1) // Target anything with a house count that is more than the single household system
+                {
 
-                // TODO - Check for building type
-                //buildingPropertyDataArray[i] = // Change households
-                BuildingPropertyData newBuildingData = changeHouseholds(buildingPropertyData);
-
-                Mod.log.Info("Game");
-                bpdArray[i] = newBuildingData; // See if this works. Maybe get nativeArray for faster access
+                    // TODO - Building type is in the space multiplier
+                    bpdArray[i] = changeHouseholds(buildingPropertyData, spawnableBuildingData.m_Level, bbData.m_LotSize); ; // See if this works. Maybe get nativeArray for faster access
+                }
             }
-            Mod.log.Info("End");
         }
 
         /**
         * Changes the household count using the mesh size, lot size and the building type
         */
-        private BuildingPropertyData changeHouseholds(BuildingPropertyData current)
+        private BuildingPropertyData changeHouseholds(BuildingPropertyData current, int level, int2 lotSize)
         {
-            // TODO - Copy zone properties work into here
-            current.m_ResidentialProperties *= 2;
+            int oldHouseholds = current.m_ResidentialProperties;
+            float approxOldResidentialProperties = (float)current.m_ResidentialProperties/((1f + 0.25f * (float)(level - 1)) * (float)(lotSize.x * lotSize.y));
+            // If not matching with a number near the cases, then it's a signature building.
+            approxOldResidentialProperties = math.round(approxOldResidentialProperties * 2.0f) / 2.0f;
+            float baseNum = 1.375f;
+            float levelBooster = 0.125f;
+
+            Mod.log.Info($"{level} - {current.m_ResidentialProperties}: RP: {approxOldResidentialProperties}, SM: {current.m_SpaceMultiplier}, {lotSize.x}x{lotSize.y}");
+            // m_ResidentialProperties appears to signify the type of residential
+            // 1 - Row housing
+            // 1.5 - Medium
+            // 2 - Mixed
+            // 4 - Low rent
+            // 6 - Tower
+            switch (approxOldResidentialProperties)
+            {
+                case 1f:
+                    // Cap to 3 tiles since it appears the row houses only get built up 3 deep
+                    baseNum = 0.75f;
+                    levelBooster = 0.25f; // To get it to double the cell size by the end
+                    lotSize = math.min(lotSize.y, 3);
+                    break;
+                case 1.5f:
+                    approxOldResidentialProperties = 1f;
+                    break;
+                case 2f:
+                    // Mixed use should be slightly more than medium density since the buildings are usually wall to wall)
+                    approxOldResidentialProperties = 1.25f;
+                    break;
+                case 4f:
+                    baseNum = 1.25f;
+                    levelBooster = 0.05f;
+                    approxOldResidentialProperties = 3f;
+                    break;
+                case 6f:
+                    // Reduce residentialProperties to lower if constrained to a short building by tweaking the multiplier by lot size
+                    // Small footprint buildings are difficult to make tall and stable
+                    baseNum = 1.875f;
+                    levelBooster = 0.025f;
+                    approxOldResidentialProperties = math.min((lotSize.x + lotSize.y) / 2, 6f);
+                    /*
+                    if (lotSize == 324)
+                    {
+                        // Really nerf Glass Crown. This is a bad solution
+                        lotSize = 25f;
+                    }
+                    */
+                    break;
+                default:
+                    break;
+            }
+
+            current.m_ResidentialProperties = (int)((baseNum + (levelBooster * level)) * lotSize.x * lotSize.y * approxOldResidentialProperties);
+            /*
+            string value = $"GetBuildingPropertyData {buildingPrefab.m_LotWidth}x{buildingPrefab.m_LotDepth} -> {num}";
+            if (!uniqueCalcString.Contains(value))
+            {
+                System.Console.WriteLine(value);
+                uniqueCalcString.Add(value);
+            }
+            */
             return current;
         }
     }
