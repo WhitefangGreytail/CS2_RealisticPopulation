@@ -38,6 +38,7 @@ namespace CS2_RealisticPopulation.Patches
         public ComponentTypeHandle<BuildingPropertyData> buildingPropertyDataHandle; // To change the data
         public ComponentTypeHandle<SpawnableBuildingData> spawnableDataHandle; // To get the level out
         public ComponentTypeHandle<BuildingData> bdHandle;
+        public ComponentTypeHandle<ZonePropertiesData> zpDataHandle;
 
         public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
         {
@@ -47,6 +48,7 @@ namespace CS2_RealisticPopulation.Patches
             NativeArray<BuildingPropertyData> bpdArray = chunk.GetNativeArray(ref buildingPropertyDataHandle);
             NativeArray<SpawnableBuildingData> spdArray = chunk.GetNativeArray(ref spawnableDataHandle);
             NativeArray<BuildingData> bArray = chunk.GetNativeArray(ref bdHandle);
+            //NativeArray<ZonePropertiesData> zpArray = chunk.GetNativeArray(ref zpDataHandle);
 
             // Too bad these are structs. Can't extend </3
             for (int i = 0; i < bpdArray.Length; i++)
@@ -55,11 +57,10 @@ namespace CS2_RealisticPopulation.Patches
                 BuildingPropertyData buildingPropertyData = bpdArray[i];
                 SpawnableBuildingData spawnableBuildingData = spdArray[i];
                 BuildingData bbData = bArray[i];
-                
+                //ZonePropertiesData zpData = zpArray[i];
 
-                if (buildingPropertyData.m_ResidentialProperties > 1) // Target anything with a house count that is more than the single household system
+                if (buildingPropertyData.m_ResidentialProperties > 1) // Target anything that is probably scaled
                 {
-
                     // TODO - Building type is in the space multiplier
                     bpdArray[i] = changeHouseholds(buildingPropertyData, spawnableBuildingData.m_Level, bbData.m_LotSize); ; // See if this works. Maybe get nativeArray for faster access
                 }
@@ -72,13 +73,13 @@ namespace CS2_RealisticPopulation.Patches
         private BuildingPropertyData changeHouseholds(BuildingPropertyData current, int level, int2 lotSize)
         {
             int oldHouseholds = current.m_ResidentialProperties;
-            float approxOldResidentialProperties = (float)current.m_ResidentialProperties/((1f + 0.25f * (float)(level - 1)) * (float)(lotSize.x * lotSize.y));
+            float approxOldResidentialProperties = (float)current.m_ResidentialProperties / ((1f + 0.25f * (float)(level - 1)) * (float)(lotSize.x * lotSize.y));
             // If not matching with a number near the cases, then it's a signature building.
             approxOldResidentialProperties = math.round(approxOldResidentialProperties * 2.0f) / 2.0f;
             float baseNum = 1.375f;
             float levelBooster = 0.125f;
+            float totalLotSize = (float)(lotSize.x * lotSize.y);
 
-            Mod.log.Info($"{level} - {current.m_ResidentialProperties}: RP: {approxOldResidentialProperties}, SM: {current.m_SpaceMultiplier}, {lotSize.x}x{lotSize.y}");
             // m_ResidentialProperties appears to signify the type of residential
             // 1 - Row housing
             // 1.5 - Medium
@@ -91,7 +92,7 @@ namespace CS2_RealisticPopulation.Patches
                     // Cap to 3 tiles since it appears the row houses only get built up 3 deep
                     baseNum = 0.75f;
                     levelBooster = 0.25f; // To get it to double the cell size by the end
-                    lotSize = math.min(lotSize.y, 3);
+                    totalLotSize = math.min(lotSize.y, 3);
                     break;
                 case 1.5f:
                     approxOldResidentialProperties = 1f;
@@ -120,10 +121,12 @@ namespace CS2_RealisticPopulation.Patches
                     */
                     break;
                 default:
-                    break;
+                    Mod.log.Info($"Abnormal approxOldResidentialProperties : {approxOldResidentialProperties}. Possibly non scaled");
+                    return current; // Abort. Previous changes would have aborted before as well
             }
 
-            current.m_ResidentialProperties = (int)((baseNum + (levelBooster * level)) * lotSize.x * lotSize.y * approxOldResidentialProperties);
+            Mod.log.Info($"{level} - {current.m_ResidentialProperties}: RP: {approxOldResidentialProperties}, SM: {current.m_SpaceMultiplier}, {lotSize.x}x{lotSize.y}");
+            current.m_ResidentialProperties = (int)((baseNum + (levelBooster * level)) * totalLotSize * approxOldResidentialProperties);
             /*
             string value = $"GetBuildingPropertyData {buildingPrefab.m_LotWidth}x{buildingPrefab.m_LotDepth} -> {num}";
             if (!uniqueCalcString.Contains(value))

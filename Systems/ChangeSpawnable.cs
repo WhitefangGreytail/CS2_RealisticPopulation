@@ -36,12 +36,12 @@ namespace WG_CS2_RealisticPopulation.Systems
             // Do query and make changes as the game is loading
             if (mode == GameMode.Game)
             {
-                Mod.log.Info("Game mode");
                 // Instantiate the job struct
                 var changeSpawnablesJob = new ChangeSpawnablesJob();
                 changeSpawnablesJob.spawnableDataHandle = this.GetComponentTypeHandle<SpawnableBuildingData>(false);
                 changeSpawnablesJob.buildingPropertyDataHandle = this.GetComponentTypeHandle<BuildingPropertyData>(true);
                 changeSpawnablesJob.bdHandle = this.GetComponentTypeHandle<BuildingData>(false);
+                //changeSpawnablesJob.zpDataHandle = this.GetComponentTypeHandle<ZonePropertiesData>(false);
 
                 // Schedule the job
                 this.Dependency
