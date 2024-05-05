@@ -19,7 +19,9 @@ namespace WG_CS2_RealisticPopulation
 			if (properties.m_ResidentialProperties > 0) // Mixed
 			{
 				baseMultiplier = .75f;
-			}
+				baseMultiplier = 2.5f;
+                levelStep = 0f; // The commercial space does not expand since it is only the ground floor.
+            }
 			__result = Mathf.CeilToInt(serviceData.m_MaxWorkersPerCell * (float)building.m_LotSize.x * (float)building.m_LotSize.y * (baseMultiplier + levelStep * (float)level) * properties.m_SpaceMultiplier);
 			//System.Console.WriteLine("C(" + level + ") - " + __result);
 			return false; // Skip original
